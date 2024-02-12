@@ -26,7 +26,7 @@ function App() {
       [name]: files ? files[0] : value,
     });
 
-    const error = validate(name, value);
+    const error = validate(name, files ? files[0] : value);
 
     setErrors({
       ...errors,
@@ -37,24 +37,36 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (Object.values(errors).some((error) => error.length > 0)) {
-      alert("Please fill out all fields correctly");
-    } else {
-      const newCard = {
-        id: uniqid(),
-        title: inputValues.title,
-        image: URL.createObjectURL(inputValues.image),
-        description: inputValues.description,
-      };
-
-      setCards((prevCards) => [...prevCards, newCard]);
-
-      setInputValues({
-        title: "",
-        image: null,
-        description: "",
-      });
+    // Input alanlarının dolu olduğunu ve hata olmadığını kontrol et
+    if (
+      inputValues.title.trim() === "" ||
+      inputValues.description.trim() === "" ||
+      inputValues.image === null ||
+      errors.title !== "" ||
+      errors.description !== "" ||
+      errors.image !== ""
+    ) {
+      alert("Zəhmət olmasa bütün sahələri düzgün doldurun");
+      return; // Hatalı giriş varsa işlemi durdur
     }
+
+    // Tüm alanlar dolu ve hatalar yoksa yeni kart oluştur
+    const newCard = {
+      id: uniqid(),
+      title: inputValues.title,
+      image: URL.createObjectURL(inputValues.image),
+      description: inputValues.description,
+    };
+
+    // Kartları güncelle
+    setCards((prevCards) => [...prevCards, newCard]);
+
+    // Input alanlarını sıfırla
+    setInputValues({
+      title: "",
+      image: null,
+      description: "",
+    });
   };
 
   const handleDelete = (id) => {
